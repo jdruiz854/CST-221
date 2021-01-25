@@ -12,32 +12,34 @@ FILE *fptr;
 
 void process1()
 {
-	char str[50];
+	printf("Process 1 is starting.\n");
+	fprintf(fptr, "%s\n", "Process 1 is starting.\n");
 
 	for(int x = 0; x < 5; ++x)
 	{
-		strncat(str, "Process 1 Running...%d\n", x);
 		printf("Process 1 Running...%d\n", x);
-		fprintf(fptr, "%d.%s\n", x, str );
+		fprintf(fptr, "%d.%s\n", x, "Process 1 Running.\n" );
 	}
 	fclose(fptr);
 }
 
 void process2()
 {
-	char str[50];
+
+	printf("Process 2 is starting.\n");
+	fprintf(fptr, "%s\n", "Process 2 is starting.\n");
 
 	for(int x = 0; x < 5; ++x)
 	{
-		strncat(str, "Process 2 Running...%d\n", x);
 		printf("Process 2 Running...%d\n", x);
-		fprintf(fptr, "%d. %s\n", x, str);
+		fprintf(fptr, "%d.%s\n", x, "Process 2 Running.\n");
 	}
 	fclose(fptr);
 }
 
 int main(int argc, char *argv[])
 {
+	i = 0;
 	pid_t pid;
 	fptr = fopen("ActivityLog.txt", "w");
 	fclose(fptr);
