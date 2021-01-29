@@ -8,10 +8,14 @@
 #include <sys/mman.h>
 #include <pthread.h>
 
+pthread_mutex_t lock;
+
 FILE *fptr;
 
 void process1()
 {
+	pthread_mutex_lock(&lock);
+	
 	printf("Process 1 is starting.\n");
 	fprintf(fptr, "%s\n", "Process 1 is starting.\n");
 
@@ -21,11 +25,14 @@ void process1()
 		fprintf(fptr, "%d.%s\n", x, "Process 1 Running.\n" );
 	}
 	fclose(fptr);
+	
+	pthread_mutex_unlock(&lock);
 }
 
 void process2()
 {
-
+	pthread_mutex_lock(&lock);
+	
 	printf("Process 2 is starting.\n");
 	fprintf(fptr, "%s\n", "Process 2 is starting.\n");
 
@@ -35,11 +42,12 @@ void process2()
 		fprintf(fptr, "%d.%s\n", x, "Process 2 Running.\n");
 	}
 	fclose(fptr);
+
+	pthread_mutex_unlock(&lock);
 }
 
 int main(int argc, char *argv[])
 {
-	i = 0;
 	pid_t pid;
 	fptr = fopen("ActivityLog.txt", "w");
 	fclose(fptr);
@@ -56,13 +64,31 @@ int main(int argc, char *argv[])
 
 	if(pid == 0)
 	{
+		while(pthread_mutex_trylock(&lock) == 1)
+		{
+			int i = 1;
+
+			printf("Process 1 waiting...%d\n", i);
+			fprintf(fptr,"%d.%s\n",i ,"Process 1 waiting...");
+			sleep(3);
+
+			i++;
+		}
 		process1();
-		sleep(1);
 	}
 	else
 	{
+		while(pthread_mutex_trylock(&lock) == 1)
+		{
+			int i = 1;
+
+			printf("Process 2 waiting...%d/n", i);
+			fprintf(fptr, "%d.%s\n", i, "Process 2 Waiting...");
+			sleep(3);
+
+			i++;
+		}
 		process2();
-		sleep(1);
 	}
 
 	return 0;
